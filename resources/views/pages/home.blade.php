@@ -102,21 +102,159 @@
         </div>
       </form>
 
-      @if(isset($recipes))
-    <div class="row">
-      @foreach($recipes as $recipe)
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img src="{{ $recipe['strMealThumb'] }}" class="card-img-top" alt="{{ $recipe['strMeal'] }}">
-            <div class="card-body">
-              <h5 class="card-title">{{ $recipe['strMeal'] }}</h5>
-              <a href="{{ route('recipe.show', $recipe['idMeal']) }}" class="btn btn-sm btn-outline-primary">View Recipe</a>
+    <!-- cards here -->
+    @if(isset($recipes))
+  <div class="row">
+    @foreach($recipes as $recipe)
+      <div class="col-md-4 mb-4">
+        <div class="card recipe-card border-0 rounded-4 shadow-sm hover-lift h-100 overflow-hidden">
+          <div class="position-relative">
+            <img src="{{ $recipe['strMealThumb'] }}" class="card-img-top recipe-img" alt="{{ $recipe['strMeal'] }}">
+            <div class="position-absolute top-0 end-0 m-3">
+              <span class="badge bg-dark bg-opacity-75 p-2 rounded-pill">
+              </span>
+            </div>
+            <div class="recipe-overlay">
+              <div class="d-flex align-items-center justify-content-center h-100">
+                <a href="{{ route('recipe.show', $recipe['idMeal']) }}" class="btn btn-light btn-lg rounded-circle">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </div>
             </div>
           </div>
+          <div class="card-body p-4 text-center">
+            <div class="recipe-category mb-2">
+              <span class="badge bg-gradient text-white rounded-pill px-3 py-2">
+              </span>
+            </div>
+            <h5 class="card-title fw-bold mb-3">{{ $recipe['strMeal'] }}</h5>
+            <div class="d-flex align-items-center justify-content-center mb-3">
+            </div>
+            <div class="recipe-meta d-flex justify-content-center gap-3 text-muted mb-3">
+            </div>
+            <a href="{{ route('recipe.show', $recipe['idMeal']) }}" class="btn btn-dark rounded-pill px-4 py-2 fw-bold">
+              View Recipe
+            </a>
+          </div>
         </div>
-      @endforeach
-    </div>
-  @endif
+      </div>
+    @endforeach
+  </div>
+
+  <style>
+    .recipe-card {
+      transition: all 0.3s ease;
+    }
+    
+    .recipe-img {
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .recipe-card:hover .recipe-img {
+      transform: scale(1.05);
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .recipe-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .recipe-card:hover .recipe-overlay {
+      opacity: 1;
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(45deg, #ff7e5f, #feb47b);
+      border: none;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-gradient:hover {
+      background: linear-gradient(45deg, #feb47b, #ff7e5f);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      color: white;
+    }
+    
+    .bg-gradient {
+      background: linear-gradient(45deg, #ff7e5f, #feb47b);
+    }
+  </style>
+
+  <style>
+    .recipe-card {
+      transition: all 0.3s ease;
+    }
+    
+    .recipe-img {
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .recipe-card:hover .recipe-img {
+      transform: scale(1.05);
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .recipe-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .recipe-card:hover .recipe-overlay {
+      opacity: 1;
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(45deg, #ff7e5f, #feb47b);
+      border: none;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-gradient:hover {
+      background: linear-gradient(45deg, #feb47b, #ff7e5f);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      color: white;
+    }
+    
+    .bg-gradient {
+      background: linear-gradient(45deg, #ff7e5f, #feb47b);
+    }
+  </style>
+@endif
 
     </div>
   </div>
