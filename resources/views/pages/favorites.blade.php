@@ -92,13 +92,26 @@
   .favorites-hero-bg {
     position: absolute;
     width: 100%;
+    z-index: 1;
   }
+
+  .favorites-hero {
+  position: relative;
+  height: 40vh;
+  overflow: hidden;
+}
+
+.hero-content-wrapper {
+  position: relative;
+  z-index: 2;
+}
   
   .hero-wave {
     position: absolute;
     left: 0;
     width: 100%;
-    line-height: 0;
+    line-height: 1;
+    z-index: 2;
   }
   
   .favorites-title {
@@ -108,7 +121,7 @@
   
   /* Recipe Cards */
   .recipe-card {
-    transition: all 0.3s ease;
+    transition: all 0.3s ease , box-shadow 0.3s ease;
     overflow: hidden;
   }
   
@@ -118,9 +131,14 @@
     object-fit: cover;
   }
   
-  .recipe-card:hover img {
-    transform: scale(1.05);
-  }
+  .recipe-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  font-size: 1.1rem;
+}
   
   /* Changed heart color to black/dark instead of red */
   .remove-favorite {
@@ -304,6 +322,21 @@
     bottom: -10px;
     left: 0;
   }
+
+
+  .btn-outline-dark.active,
+.btn-outline-dark:active,
+.btn-outline-dark:focus {
+  background-color: #212529;
+  color: white;
+  border-color: #212529;
+}
+
+#recipes-container .recipe-item {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 </style>
 
 <script>
