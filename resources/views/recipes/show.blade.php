@@ -52,6 +52,36 @@
     <div class="row gx-5">
       <!-- Sidebar -->
       <div class="col-lg-4 order-2 order-lg-1">
+        <!-- QuickAction-->
+      <div class="card border-0 shadow-lg rounded-4 mb-4 actions-card">
+            <div class="card-header bg-dark text-white p-3 rounded-top-4">
+              <h4 class="mb-0 fw-bold d-flex align-items-center">
+                <i class="bi bi-lightning-fill me-2"></i>Quick Actions
+              </h4>
+            </div>
+            <div class="card-body p-0">
+              <div class="list-group list-group-flush rounded-bottom-4">
+                <a href="#ingredients" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                  <i class="bi bi-basket fs-4 me-3"></i>
+                  <span>View Ingredients</span>
+                </a>
+                <a href="#instructions" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                  <i class="bi bi-list-ol fs-4 me-3"></i>
+                  <span>View Instructions</span>
+                </a>
+                @if(isset($recipe['strYoutube']) && !empty($recipe['strYoutube']))
+                <a href="#video" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                  <i class="bi bi-play-btn fs-4 me-3"></i>
+                  <span>Watch Video</span>
+                </a>
+                @endif
+                <button id="print-recipe" class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                  <i class="bi bi-printer fs-4 me-3"></i>
+                  <span>Print Recipe</span>
+                </button>
+              </div>
+            </div>
+          </div>
         <!-- Recipe Image -->
         <div class="sticky-top" style="top: 20px; z-index: 10;">
           <div class="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden recipe-image-card">
@@ -121,36 +151,7 @@
     </div>
   </div>
 </div>
-          <!-- Quick Actions -->
-          <div class="card border-0 shadow-lg rounded-4 mb-4 actions-card">
-            <div class="card-header bg-dark text-white p-3 rounded-top-4">
-              <h4 class="mb-0 fw-bold d-flex align-items-center">
-                <i class="bi bi-lightning-fill me-2"></i>Quick Actions
-              </h4>
-            </div>
-            <div class="card-body p-0">
-              <div class="list-group list-group-flush rounded-bottom-4">
-                <a href="#ingredients" class="list-group-item list-group-item-action d-flex align-items-center p-3">
-                  <i class="bi bi-basket fs-4 me-3"></i>
-                  <span>View Ingredients</span>
-                </a>
-                <a href="#instructions" class="list-group-item list-group-item-action d-flex align-items-center p-3">
-                  <i class="bi bi-list-ol fs-4 me-3"></i>
-                  <span>View Instructions</span>
-                </a>
-                @if(isset($recipe['strYoutube']) && !empty($recipe['strYoutube']))
-                <a href="#video" class="list-group-item list-group-item-action d-flex align-items-center p-3">
-                  <i class="bi bi-play-btn fs-4 me-3"></i>
-                  <span>Watch Video</span>
-                </a>
-                @endif
-                <button id="print-recipe" class="list-group-item list-group-item-action d-flex align-items-center p-3">
-                  <i class="bi bi-printer fs-4 me-3"></i>
-                  <span>Print Recipe</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
       <!-- Main Content -->
@@ -206,71 +207,60 @@
         </div>
         
         <!-- Instructions --> 
-        <div id="instructions" class="card border-0 shadow-lg rounded-4 mb-5 instructions-card">
-          <div class="card-header bg-dark text-white p-4 rounded-top-4">
-            <div class="d-flex align-items-center">
-              <div class="recipe-section-icon bg-white rounded-circle d-flex align-items-center justify-content-center me-3">
-                <i class="bi bi-list-ol text-dark"></i>
-              </div>
-              <h3 class="mb-0 fw-bold">Step by Step Instructions</h3>
-            </div>
+<div id="instructions" class="card border-0 shadow-lg rounded-4 mb-5 instructions-card">
+  <div class="card-header bg-dark text-white p-4 rounded-top-4">
+    <div class="d-flex align-items-center">
+      <div class="recipe-section-icon bg-white rounded-circle d-flex align-items-center justify-content-center me-3">
+        <i class="bi bi-list-ol text-dark"></i>
+      </div>
+      <h3 class="mb-0 fw-bold">Step by Step Instructions</h3>
+    </div>
+  </div>
+  
+  <div class="card-body p-4">
+    @php
+      // Split instructions into steps
+      $instructions = $recipe['strInstructions'];
+
+      if (preg_match('/^\s*\d+\s*[\.:\)]\s*/m', $instructions)) {
+        $steps = preg_split('/\s*\d+\s*[\.:\)]\s*/m', $instructions);
+        if (empty(trim($steps[0]))) array_shift($steps);
+      } else {
+        $steps = preg_split('/\.\s+/', $instructions);
+      }
+
+      $steps = array_filter($steps, fn($step) => trim($step) !== '');
+
+      $steps = array_map(function($step) {
+        $step = trim($step);
+        return preg_match('/[.!?]$/', $step) ? $step : $step . '.';
+      }, $steps);
+    @endphp
+
+    <div class="steps-timeline">
+      @foreach($steps as $index => $step)
+        <div class="step-wrapper" data-step="{{ $index + 1 }}">
+          <div class="step-bullet">
+            <span>{{ $index + 1 }}</span>
           </div>
-          
-          <div class="card-body p-4">
-            @php
-              // Split instructions into steps
-              $instructions = $recipe['strInstructions'];
-              
-              // First check if instructions are already numbered
-              if (preg_match('/^\s*\d+\s*[\.:\)]\s*/m', $instructions)) {
-                // Split by numbered steps
-                $steps = preg_split('/\s*\d+\s*[\.:\)]\s*/m', $instructions);
-                // Remove the first empty element if it exists
-                if (empty(trim($steps[0]))) {
-                  array_shift($steps);
-                }
-              } else {
-                // Try to split by sentences
-                $steps = preg_split('/\.\s+/', $instructions);
-              }
-              
-              // Remove empty steps
-              $steps = array_filter($steps, function($step) {
-                return trim($step) !== '';
-              });
-              
-              // Add period back to each step if it doesn't end with one
-              $steps = array_map(function($step) {
-                $step = trim($step);
-                if (substr($step, -1) !== '.' && substr($step, -1) !== '!' && substr($step, -1) !== '?') {
-                  $step .= '.';
-                }
-                return $step;
-              }, $steps);
-            @endphp
-            
-            <div class="steps-timeline">
-              @foreach($steps as $index => $step)
-                <div class="step-wrapper" data-step="{{ $index + 1 }}">
-                  <div class="step-bullet">
-                    <span>{{ $index + 1 }}</span>
-                  </div>
-                  <div class="step-content">
-                    <div class="step-header">
-                      <h5 class="step-title">Step {{ $index + 1 }}</h5>
-                      <div class="step-actions">
-                        <button class="btn-step-complete" title="Mark as completed">
-                          <i class="bi bi-check-circle"></i>
-                        </button>
-                      </div>
-                    </div>
-                    <p class="step-description">{{ $step }}</p>
-                  </div>
-                </div>
-              @endforeach
+          <div class="step-content">
+            <div class="step-header">
+              <h5 class="step-title">Step {{ $index + 1 }}</h5>
+              <div class="step-actions">
+                <button type="button" class="btn-step-complete" title="Mark as completed" aria-pressed="false">
+                  <i class="bi bi-check-circle"></i>
+                </button>
+              </div>
             </div>
+            <p class="step-description">{{ $step }}</p>
           </div>
         </div>
+      @endforeach
+    </div>
+  </div>
+</div>
+
+
         
         <!-- Video Tutorial -->
 @if(isset($recipe['strYoutube']) && !empty($recipe['strYoutube']))
@@ -815,26 +805,23 @@
         return new bootstrap.Tooltip(tooltipTriggerEl)
       });
     }
-    
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        
         document.querySelector(this.getAttribute('href')).scrollIntoView({
           behavior: 'smooth'
         });
       });
     });
-    
+
     // Animate elements on scroll
     const animateOnScroll = function() {
       const cards = document.querySelectorAll('.ingredients-card, .instructions-card, .video-card, .tags-card, .source-card, .step-wrapper');
-      
       cards.forEach((card, index) => {
         const cardPosition = card.getBoundingClientRect().top;
         const screenPosition = window.innerHeight / 1.2;
-        
         if (cardPosition < screenPosition) {
           setTimeout(() => {
             card.style.opacity = '1';
@@ -843,7 +830,7 @@
         }
       });
     };
-    
+
     // Set initial state for animation
     const cards = document.querySelectorAll('.ingredients-card, .instructions-card, .video-card, .tags-card, .source-card, .step-wrapper');
     cards.forEach(card => {
@@ -851,11 +838,11 @@
       card.style.transform = 'translateY(20px)';
       card.style.transition = 'all 0.5s ease';
     });
-    
+
     // Run animation on load and scroll
     window.addEventListener('scroll', animateOnScroll);
     animateOnScroll();
-    
+
     // Ingredient check functionality
     document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', function() {
@@ -871,31 +858,65 @@
         }
       });
     });
-    
-    // Step completion functionality
-    document.querySelectorAll('.btn-step-complete').forEach(button => {
-      button.addEventListener('click', function() {
-        const stepWrapper = this.closest('.step-wrapper');
-        stepWrapper.classList.toggle('completed');
-        
-        if (stepWrapper.classList.contains('completed')) {
-          this.classList.add('active');
-          this.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
-        } else {
-          this.classList.remove('active');
-          this.innerHTML = '<i class="bi bi-check-circle"></i>';
-        }
-      });
-    });
-    
+
+    // Step completion functionality with sequential logic
+document.querySelectorAll('.btn-step-complete').forEach(button => {
+  button.addEventListener('click', function() {
+    const currentStepWrapper = this.closest('.step-wrapper');
+    const allSteps = Array.from(document.querySelectorAll('.step-wrapper'));
+    const currentIndex = allSteps.indexOf(currentStepWrapper);
+
+    // Check if all previous steps are completed
+    let canComplete = true;
+    for (let i = 0; i < currentIndex; i++) {
+      if (!allSteps[i].classList.contains('completed')) {
+        canComplete = false;
+        break;
+      }
+    }
+
+    if (!canComplete) {
+      alert(`Please complete Step ${currentIndex} before proceeding to Step ${currentIndex + 1}.`);
+      return;
+    }
+
+    // Toggle current step
+    currentStepWrapper.classList.toggle('completed');
+    const icon = this.querySelector('i');
+
+    if (currentStepWrapper.classList.contains('completed')) {
+      this.classList.add('active');
+      this.setAttribute('aria-pressed', 'true');
+      icon.classList.remove('bi-check-circle');
+      icon.classList.add('bi-check-circle-fill');
+    } else {
+      this.classList.remove('active');
+      this.setAttribute('aria-pressed', 'false');
+      icon.classList.remove('bi-check-circle-fill');
+      icon.classList.add('bi-check-circle');
+
+      // Unmark all following steps
+      for (let i = currentIndex + 1; i < allSteps.length; i++) {
+        const nextStep = allSteps[i];
+        const nextButton = nextStep.querySelector('.btn-step-complete');
+        const nextIcon = nextButton.querySelector('i');
+
+        nextStep.classList.remove('completed');
+        nextButton.classList.remove('active');
+        nextButton.setAttribute('aria-pressed', 'false');
+        nextIcon.classList.remove('bi-check-circle-fill');
+        nextIcon.classList.add('bi-check-circle');
+      }
+    }
+  });
+});
+
     // Video timestamp functionality
     const timestampBtns = document.querySelectorAll('.timestamp-btn');
-    
     timestampBtns.forEach(button => {
       button.addEventListener('click', function() {
         const seconds = parseInt(this.dataset.time);
         const iframe = document.querySelector('.video-container iframe');
-        
         if (iframe) {
           const src = iframe.src;
           if (src.indexOf('?') > -1) {
@@ -906,14 +927,13 @@
         }
       });
     });
-    
+
     // Print recipe functionality
     const printRecipeBtn = document.getElementById('print-recipe');
-    
     if (printRecipeBtn) {
       printRecipeBtn.addEventListener('click', function() {
         const recipeName = document.querySelector('.recipe-title').textContent;
-        
+
         // Get ingredients
         const ingredientsList = [];
         document.querySelectorAll('.ingredient-item').forEach(item => {
@@ -921,7 +941,7 @@
           const measure = item.querySelector('.ingredient-measure').textContent;
           ingredientsList.push(`${ingredient} - ${measure}`);
         });
-        
+
         // Get instructions
         const instructionsList = [];
         document.querySelectorAll('.step-wrapper').forEach(step => {
@@ -929,7 +949,7 @@
           const instruction = step.querySelector('.step-description').textContent;
           instructionsList.push(`${stepNumber}. ${instruction}`);
         });
-        
+
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
           <html>
@@ -959,19 +979,19 @@
               <div class="recipe-meta">
                 ${document.querySelector('.recipe-meta').innerHTML}
               </div>
-              
+
               <h2>Ingredients</h2>
               <ul>
                 ${ingredientsList.map(item => `<li>${item}</li>`).join('')}
               </ul>
-              
+
               <h2>Instructions</h2>
               <ol>
                 ${instructionsList.map(item => `<li>${item}</li>`).join('')}
               </ol>
-              
+
               <div class="footer">Recipe from Recipe Finder</div>
-              
+
               <div class="print-buttons no-print">
                 <button onclick="window.print();" class="print-button">Print Recipe</button>
                 <button onclick="window.close();" class="close-button">Close</button>
@@ -984,6 +1004,7 @@
     }
   });
 </script>
+
 @endsection
 
 <!--PWEDE RANI IHAWA, OPTIONAL RANI NA FEATURES-->
