@@ -621,9 +621,13 @@
       </a>
       </li>
       <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-        aria-expanded="false">
-        <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
+      <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="nav-profile-img-container me-2">
+        <img src="{{ Auth::user()->profile_picture ?? '/images/default-avatar.png' }}" alt="Profile"
+        class="nav-profile-img">
+        </div>
+        <span>{{ Auth::user()->name }}</span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"
         style="background: var(--primary-color); border: 1px solid var(--border-color);">
@@ -661,6 +665,82 @@
       </div>
     </div>
     </nav>
+
+    <style>
+    /* Profile picture in navbar */
+    .nav-profile-img-container {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--accent-color, #ff7043);
+    }
+
+    .nav-profile-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Profile picture on edit page */
+    .profile-picture-wrapper {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 3px solid var(--accent-color, #ff7043);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .profile-picture-wrapper:hover {
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-picture {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    .profile-picture-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      color: white;
+      font-weight: 600;
+    }
+
+    .profile-picture-wrapper:hover .profile-picture-overlay {
+      opacity: 1;
+    }
+
+    .profile-picture-wrapper:hover .profile-picture {
+      transform: scale(1.1);
+    }
+
+    .profile-picture-input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;
+    }
+    </style>
   @endif
 
   <div class="container page-transition">
